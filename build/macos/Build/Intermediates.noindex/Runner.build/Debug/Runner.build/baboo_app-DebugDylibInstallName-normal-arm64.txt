@@ -1,0 +1,1 @@
+@rpath/baboo_app.debug.dylib
