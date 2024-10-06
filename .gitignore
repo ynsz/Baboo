@@ -1,0 +1,20 @@
+# macOSのメタデータファイル
+.DS_Store
+
+# コンパイル結果を無視
+/build
+/dist
+
+# ログファイルを無視
+*.log
+
+# 環境変数ファイルを無視
+.env
+
+# node_modules ディレクトリを無視
+node_modules/
+
+# バックアップファイルや一時ファイルを無視
+*.bak
+*.tmp
+*.swp
