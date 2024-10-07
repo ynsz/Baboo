@@ -1,10 +1,10 @@
 import 'dart:convert'; // Base64エンコーディング用
-import 'dart:html' as html; // Dart HTMLライブラリをインポート
-import 'dart:typed_data'; // Uint8Listの使用
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 class PostScreen extends StatefulWidget {
+  const PostScreen({Key? key}) : super(key: key); // Added Key parameter
+
   @override
   _PostScreenState createState() => _PostScreenState();
 }
@@ -31,15 +31,9 @@ class _PostScreenState extends State<PostScreen> {
       final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
       if (image != null) {
         // 画像をBase64に変換
-        final reader = html.FileReader();
-        final blob = html.Blob([await html.window.fetch(image.path).then((response) => response.arrayBuffer())]); // Blobを作成
-        reader.readAsArrayBuffer(blob); // FileReaderを使ってバイトを読み込む
-
-        reader.onLoadEnd.listen((e) {
-          final bytes = reader.result as Uint8List; // 読み込んだデータをUint8Listに変換
-          setState(() {
-            _base64Image = base64Encode(bytes); // Base64形式にエンコード
-          });
+        final bytes = await image.readAsBytes();
+        setState(() {
+          _base64Image = base64Encode(bytes); // Base64形式にエンコード
         });
       }
     } catch (e) {
@@ -51,10 +45,13 @@ class _PostScreenState extends State<PostScreen> {
   }
 
   void _submitPost() {
-    // 投稿処理のロジックを追加
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('投稿が成功しました')),
-    );
+    if (_isTextFieldNotEmpty) {
+      Navigator.pushReplacementNamed(context, '/home', arguments: {
+        'dateTime': DateTime.now().toString(),
+        'text': _controller.text,
+        'image': _base64Image,
+      });
+    }
   }
 
   @override
@@ -67,22 +64,23 @@ class _PostScreenState extends State<PostScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween, // 両端揃え
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 IconButton(
-                  icon: Icon(Icons.arrow_back, color: Color(0xFFFFD4B4)), // 矢印の色を設定
+                  icon: Icon(Icons.arrow_back, color: Color(0xFFFFD4B4)),
                   onPressed: () => Navigator.pop(context),
                 ),
-                // 投稿ボタンを右揃えにするためにContainerでラップ
                 Container(
-                  width: 140, // ボタンの幅
-                  height: 50, // ボタンの高さ
+                  width: 86,
+                  height: 32,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: _isTextFieldNotEmpty ? Color(0xFFFFB37B) : Colors.grey, // プライマリーカラーまたはグレー
-                      foregroundColor: Colors.white, // 文字色を白に設定
+                      backgroundColor: _isTextFieldNotEmpty
+                          ? Color(0xFFFFB37B)
+                          : Colors.grey,
+                      foregroundColor: Colors.white,
                     ),
-                    onPressed: _isTextFieldNotEmpty ? _submitPost : null, // 投稿処理
+                    onPressed: _isTextFieldNotEmpty ? _submitPost : null,
                     child: Text('投稿する'),
                   ),
                 ),
@@ -99,11 +97,11 @@ class _PostScreenState extends State<PostScreen> {
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: _base64Image == null
-                    ? Icon(Icons.image, size: 50, color: Colors.white) // アイコン色を白に設定
+                    ? Icon(Icons.image, size: 50, color: Colors.white)
                     : ClipRRect(
                         borderRadius: BorderRadius.circular(10),
                         child: Image.memory(
-                          base64Decode(_base64Image!), // Base64データをデコードして表示
+                          base64Decode(_base64Image!),
                           fit: BoxFit.cover,
                         ),
                       ),
