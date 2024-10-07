@@ -14,6 +14,10 @@ class AppTheme {
       bodyMedium: TextStyle(
         color: Color(0xFF72828E),
       ),
+      displayLarge: TextStyle(
+        fontSize: 20,
+        color: Color(0xFF505B64),
+      ),
       displayMedium: TextStyle(
         fontSize: 16,
         color: Color(0xFF505B64),
@@ -23,6 +27,11 @@ class AppTheme {
         color: Color(0xFF505B64),
       ),
     ),
+    textSelectionTheme: TextSelectionThemeData(
+          cursorColor: Color(0xFFFFB37B), // カーソルの色
+          selectionColor: Color(0xFFFFD4B4), // テキスト選択の背景色
+          selectionHandleColor: Color(0xFFFFD4B4), // 選択ハンドルの色
+        ),
     // ボタンスタイルの設定
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
